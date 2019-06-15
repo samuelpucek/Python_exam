@@ -1,0 +1,120 @@
+Zkouška z Pythonu 11.6.2019
+Napište jednoduchý program pro správu financí malé kavárny. Kavárna si udržuje soubor s údaji o zákaznících a stavu konta každého z nich. Zákazníci mohou na své konto pøevést peníze výhradnì bankovním pøevodem.
+
+Požadovaný program dostane na vstupu jako jediné dva pozièní argumenty cestu k souboru se zákazníky a cestu k souboru s platbami:
+
+Usage: ./balance.py CUSTOMERS PAYMENTS
+CUSTOMERS is the customer database.
+PAYMENTS is bank account transaction log file.
+Program projde soubor s platbami a každou platbu se pokusí pøiøadit k zákazníkovi (pomocí variabilního symbolu), pøièemž aktualizuje saldo (balance) jeho úètu. Program vypíše na standardní výstup aktualizovanou databázi zákazníkù ve stejném formátu, v jakém je vstupní soubor CUSTOMERS.
+
+Jestliže se kteroukoli platbu nepodaøí spárovat se zákazníkem, vypíše program na standardní chybový výstup chybovou hlášku. Pøesné znìní je na Vás, avšak mìlo by být s její pomocí možné identifikovat transakci, kterou nebylo možné automaticky zpracovat.
+
+Formát souboru CUSTOMERS
+Soubor ve formátu JSON. Top-level objekt je pole, které obsahuje slovníky popisující zákazníky. Známe jméno, pøíjmení a ID (variabilní symbol) každého zákazníka. Program dále pro každého zákazníka udržuje saldo (balance) v Kè (CZK) a datum a èas poslední platby uložený jako UNIXový time-stamp.
+
+Údaj last_payment je time-stamp poslední platby, která byla pro zákazníka zpracována. Pøi zpracování souboru s transakcemi ignorujte platby, které jsou vùèi last_payment v minulosti, abyste je nezaúètovali dvakrát. (Mùžete pøedpokládat, že v souboru PAYMENTS jsou transakce uspoøádány vzestupnì dle sloupce timestamp.)
+
+Nezapomeòte hodnotu last_payment aktualizovat po zaúètování platby.
+
+Korektní vstup obsahuje pro každého zákazníka všechny údaje s výjimkou last_payment, který nemusí být nastaven, nebo mùže být null.
+
+Pøíklad takového souboru:
+
+[
+	{
+		"name": "Bob",
+		"surname": "Fulkerson",
+		"id": 201,
+		"balance_czk": 0,
+		"last_payment": 156010000
+	},
+	{
+		"name": "Freddie",
+		"surname": "Gonzales",
+		"id": 666,
+		"balance_czk": 200,
+		"last_payment": 156010010
+	},
+	{
+		"name": "Ahmad",
+		"surname": "Stevenson",
+		"id": 100,
+		"balance_czk": 5200,
+		"last_payment": 156030000
+	},
+	{
+		"name": "Karel",
+		"surname": "Kvákal",
+		"id": 202,
+		"balance_czk": -1600,
+		"last_payment": null
+	}
+]
+Pro parsování tohoto souboru použijte modul json. Nepokoušejte se psát vlastní parser.
+
+Formát souboru PAYMENTS
+Jednoduché CSV s hlavièkou.
+
+vs,payment_id,timestamp,account_no,bank,amount,currency,note
+201,100,156020000,302-23020221,0100,300.44,CZK,Bob Fulkerson
+666,107,156020020,20842942,0100,2000000,GBP,FREDDIE GONZALES
+100,194,156020040,107-4392103928,0100,30000,EUR,AHMAD STEVENSON
+202,202,156020060,000288472,3100,15,USD,KVAKAL
+123,298,156020080,107-4248262858,3300,300.44,BTC,
+Tento soubor lze zpracovat pár øádky Pythonu, není tøeba hledat vhodnou funkci ve standardní knihovnì.
+
+Požadavky pro známku "dobøe"
+Mùžete pøedpokládat, že všechny transakce jsou v mìnì CZK. Mùžete ignorovat záhlaví souboru PAYMENTS a pøedpokládat, že sloupce jsou vždy ve výše uvedeném poøadí.
+
+Program korektnì aktualizuje databázi zákazníkù údaji o platbách
+Program identifikuje všechny transakce, které se nepodaøilo zpracovat
+Jsou korektnì ošetøeny všechny chybové stavy, zejména:
+Program neobdrží požadované argumenty (vypište usage)
+Nìkterý soubor nelze otevøít nebo pøeèíst
+Nìkterý soubor není v požadovaném formátu
+Program je rozumnì (ruènì) otestovaný a nepadá na triviálních vstupech
+Program je na vhodných místech komentovaný a pøimìøenì èitelný
+Požadavky pro známku "velmi dobøe"
+(Je nutné splnit požadavky pro známku "dobøe".)
+
+Mnoho programù spoléhá na pevné poøadí sloupcù v CSV souborech, pøestože soubory mají hlavièku, která jejich poøadí jednoznaènì urèuje. Pro splnìní rozšíøeného zadání je požadováno, abyste byli schopni zpracovat soubor PAYMENTS s libovolným poøadím sloupcù, tj. s kteroukoli hlavièkou.
+
+Mùžete pøedpokládat, že soubor obsahuje všechny sloupce. Mùže ale také obsahovat nìjaké navíc.
+
+Pøíklad hlavièky souboru PAYMENTS, který dokážete zpracovat:
+
+account_no,foo,amount,currency,note2,note,payment_id,timestamp,bank,bar
+Požadavky pro známku "výbornì"
+(Je nutné splnit požadavky pro známku "velmi dobøe".)
+
+Nepøedpokládejte, že všechny mìny jsou v CZK. Jestliže zákazník provede bankovní pøevod v jiné mìnì, než je mìna jeho úètu, použijte kurzovní lístek pro pøevod na Koruny (CZK).
+
+Program pøijímá tøetí pozièní argument EXCHANGE, což je cesta k souboru s kurzovním lístkem.
+
+Usage: ./balance.py CUSTOMERS PAYMENTS EXCHANGE
+CUSTOMERS is the customer database.
+PAYMENTS is bank account transaction log file.
+EXCHANGE is exchange rate sheet.
+Narazíte-li na platbu, která není v CZK, proveïte pøepoèet do CZK pomocí kurzovního lístku (zjevným zpùsobem). Jestliže pro danou mìnu není kurz k dispozici, platbu nelze automaticky zpracovat.
+
+Formát souboru EXCHANGE
+Soubor je øádkovì orientovaný. Každý øádek je tvaru currency_symbol = rate CZK. Pøíklad:
+
+EUR = 25 CZK
+USD = 22.65 CZK
+GBP = 28.74 CZK
+(Mùžete pøedpokládat, že mezi sousedními tokeny je vždy bílé místo, takže øádek EUR= 25 CZK ani øádek USD = 25CZK nejsou platné.)
+
+Odevzdání
+V øešení prosím uveïte, o kterou verzi se jedná.
+
+Své øešení prosím zašlete e-mailem na adresu d@dcepelik.cz.
+
+Rady
+Postupujte od základního zadání ke složitìjším
+Pište pøímoèaøe a nesnažte se o objektové konstrukce
+Pro parsování JSONu použijte standardní knihovnu
+Ošetøete chyby
+Program alespoò ruènì otestujte pøedtím, než ho odevzdáte
+Nezapomeòte na hashbang a __name__ == "__main__"

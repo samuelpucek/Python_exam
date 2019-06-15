@@ -1,0 +1,30 @@
+[
+	{
+		"name": "Bob",
+		"surname": "Fulkerson",
+		"id": 201,
+		"balance_czk": 0,
+		"last_payment": 156010000
+	},
+	{
+		"name": "Freddie",
+		"surname": "Gonzales",
+		"id": 666,
+		"balance_czk": 200,
+		"last_payment": 156010010
+	},
+	{
+		"name": "Ahmad",
+		"surname": "Stevenson",
+		"id": 100,
+		"balance_czk": 5200,
+		"last_payment": 156030000
+	},
+	{
+		"name": "Karel",
+		"surname": "Kvákal",
+		"id": 202,
+		"balance_czk": -1600,
+		"last_payment": null
+	}
+]
